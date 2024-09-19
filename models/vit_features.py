@@ -133,7 +133,7 @@ class DINOv2BackboneExpanded(nn.Module):
         
         B, n_patches, dim = feature.shape
 
-        if reshape and key == "x_norm_patch_tokens":
+        if reshape and key == "x_norm_patchtokens":
             H = W = int(sqrt(n_patches))
             feature = rearrange(feature.squeeze(), "B (H W) dim -> B dim H W", H=H, W=W)
         
