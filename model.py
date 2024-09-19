@@ -222,10 +222,10 @@ def construct_TesNet(base_architecture, pretrained=True, img_size=224,
                     prototype_activation_function='log',
                     add_on_layers_type='bottleneck'):
     features = base_architecture_to_features[base_architecture](pretrained=pretrained)
-    layer_filter_sizes, layer_strides, layer_paddings = features.conv_info()
     if str(base_architecture).upper().startswith("DINOV2"):
         proto_layer_rf_info = None
     else:
+        layer_filter_sizes, layer_strides, layer_paddings = features.conv_info()
         proto_layer_rf_info = compute_proto_layer_rf_info_v2(img_size=img_size,#224
                                                             layer_filter_sizes=layer_filter_sizes,#
                                                             layer_strides=layer_strides,
