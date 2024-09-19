@@ -222,6 +222,8 @@ def warm_only(model, log=print):
 
 
 def joint(model, log=print):
+    if hasattr(model, 'module'):
+        model = model.module
     if str(model.features).upper().startswith("DINOV2"):
         model.features.set_requires_grad()
     else:
