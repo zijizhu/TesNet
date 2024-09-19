@@ -203,6 +203,8 @@ def update_prototypes_on_batch(search_batch_input,
 
             global_min_proto_dist[j] = batch_min_proto_dist_j
             global_min_fmap_patches[j] = batch_min_fmap_patch_j
+
+            continue
             
             # get the receptive field boundary of the image patch
             # that generates the representation
