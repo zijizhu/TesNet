@@ -127,7 +127,7 @@ class DINOv2BackboneExpanded(nn.Module):
         for name, param in self.dino.named_parameters():
             param.requires_grad = name in self.learnable_param_names
 
-    def forward(self, x: torch.Tensor, key: str = "x_norm_patchtokens", reshape: bool = False) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, key: str = "x_norm_patchtokens", reshape: bool = True) -> torch.Tensor:
         feature_dict = self.dino.forward_features(x)  # type: dict[str, torch.Tensor]
         feature = feature_dict[key]
         
@@ -135,7 +135,7 @@ class DINOv2BackboneExpanded(nn.Module):
 
         if reshape and key == "x_norm_patch_tokens":
             H = W = int(sqrt(n_patches))
-            feature = rearrange(feature, "B (H W) dim -> B dim H W", H=H, W=W)
+            feature = rearrange(feature.squeeze(), "B (H W) dim -> B dim H W", H=H, W=W)
         
         return feature
     
