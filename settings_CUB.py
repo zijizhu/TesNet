@@ -15,7 +15,12 @@ train_batch_size = 80
 test_batch_size = 100
 train_push_batch_size =75
 
-joint_optimizer_lrs = {'features': 1e-4,
+# Original
+# joint_optimizer_lrs = {'features': 1e-4,
+#                        'add_on_layers': 3e-3,
+#                        'prototype_vectors': 3e-3}
+# ViTs
+joint_optimizer_lrs = {'features': 1e-3,
                        'add_on_layers': 3e-3,
                        'prototype_vectors': 3e-3}
 joint_lr_step_size = 5
