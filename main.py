@@ -66,7 +66,7 @@ if dataset_name == "CUB":
     img_size = settings_CUB.img_size
     add_on_layers_type = settings_CUB.add_on_layers_type
     prototype_shape = settings_CUB.prototype_shape
-    prototype_shape[0] = args.num_prototypes
+    prototype_shape = (args.num_prototypes, prototype_shape[1], prototype_shape[2], prototype_shape[3],)
 
     prototype_activation_function = settings_CUB.prototype_activation_function
     #datasets
