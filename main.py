@@ -20,6 +20,7 @@ import settings_CUB
 parser = argparse.ArgumentParser()
 parser.add_argument('-gpuid',type=str, default='0')
 parser.add_argument('-arch',type=str, default='vgg19')
+parser.add_argument('-num_prototypes', type=int, default=2000)
 
 parser.add_argument('-dataset',type=str,default="CUB")
 parser.add_argument('-times',type=str,default="test",help="experiment_run")
@@ -36,7 +37,7 @@ dataset_name = args.dataset
 
 base_architecture_type = re.match('^[a-z]*', base_architecture).group(0)
 #model save dir
-model_dir = './saved_models/' + dataset_name+'/' + base_architecture + '/' + args.times + '/'
+model_dir = './saved_models/' + dataset_name+'/' + base_architecture + '_' + args.num_prototypes + '/'
 
 if os.path.exists(model_dir) is True:
     shutil.rmtree(model_dir)
@@ -65,6 +66,8 @@ if dataset_name == "CUB":
     img_size = settings_CUB.img_size
     add_on_layers_type = settings_CUB.add_on_layers_type
     prototype_shape = settings_CUB.prototype_shape
+    prototype_shape[0] = args.num_prototypes
+
     prototype_activation_function = settings_CUB.prototype_activation_function
     #datasets
     train_dir = settings_CUB.train_dir
