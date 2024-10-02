@@ -37,7 +37,7 @@ dataset_name = args.dataset
 
 base_architecture_type = re.match('^[a-z]*', base_architecture).group(0)
 #model save dir
-model_dir = './saved_models/' + dataset_name+'/' + base_architecture + '_' + args.num_prototypes + '/'
+model_dir = './saved_models/' + dataset_name+'/' + base_architecture + '_' + str(args.num_prototypes) + '/'
 
 if os.path.exists(model_dir) is True:
     shutil.rmtree(model_dir)
