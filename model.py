@@ -185,9 +185,8 @@ class TESNet(nn.Module):
 
         conv_output = self.conv_features(x) #[batchsize,128,14,14]
 
-        distances = self._project2basis(conv_output)
-        distances = - distances
-        return conv_output, distances
+        proto_acts = self._project2basis(conv_output)
+        return conv_output, proto_acts
 
     def set_last_layer_incorrect_connection(self, incorrect_strength):
 
