@@ -9,7 +9,7 @@ from eval.consistency import evaluate_consistency
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_set', default='CUB2011', type=str)
-    parser.add_argument('--data_path', type=str, default='datasets/cub200_cropped/')
+    parser.add_argument('--data_path', type=str, default='datasets')
     parser.add_argument('--nb_classes', type=int, default=200)
     parser.add_argument('--test_batch_size', type=int, default=30)
 
@@ -44,7 +44,8 @@ if __name__ == "__main__":
 
     if args.resume:
         checkpoint = torch.load(args.resume, map_location='cpu')
-    ppnet.load_state_dict(checkpoint)
+    # ppnet.load_state_dict(checkpoint)
+    ppnet = checkpoint
 
     ppnet.to(device)
     ppnet.eval()
