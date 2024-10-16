@@ -4,8 +4,7 @@ import numpy as np
 import torchvision.transforms as transforms
 from tqdm import tqdm
 
-from .utils import Cub2011Eval, id_to_part_loc, id_to_bbox, part_num, in_bbox
-from util.preprocess import mean, std
+from .utils import Cub2011Eval, id_to_part_loc, id_to_bbox, part_num, in_bbox, mean, std
 
 
 def perturb_img(norm_img, std=0.2, eps=0.25):
