@@ -182,6 +182,7 @@ best_time = 0
 
 # train the model
 log('start training')
+max_accu = 0.0
 for epoch in range(num_train_epochs):
     log('epoch: \t{0}'.format(epoch))
     #stage 1: Embedding space learning
@@ -200,8 +201,10 @@ for epoch in range(num_train_epochs):
     accu,test_results = tnt.test(model=ppnet_multi, dataloader=test_loader,
                     class_specific=class_specific, log=log)
 
-    save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'nopush', accu=accu,
-                                target_accu=0.70, log=log)
+    if accu >= max_accu:
+        save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'nopush', accu=accu,
+                                    target_accu=0.70, log=log)
+        max_accu = accu
     #stage2: Embedding space transparency
     if epoch >= push_start and epoch in push_epochs:
         push.push_prototypes(
@@ -219,8 +222,10 @@ for epoch in range(num_train_epochs):
             log=log)
         accu,test_results = tnt.test(model=ppnet_multi, dataloader=test_loader,
                         class_specific=class_specific, log=log)
-        save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
-                                    target_accu=0.70, log=log)
+        if accu >= max_accu:
+            save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
+                                        target_accu=0.70, log=log)
+            max_accu = accu
     #stage3: concept based classification
         if prototype_activation_function != 'linear':
             tnt.last_only(model=ppnet_multi, log=log)
@@ -231,8 +236,10 @@ for epoch in range(num_train_epochs):
 
                 accu,test_results = tnt.test(model=ppnet_multi, dataloader=test_loader,
                                 class_specific=class_specific, log=log)
-                save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
-                                            target_accu=0.70, log=log)
+                if accu >= max_accu:
+                    save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
+                                                target_accu=0.70, log=log)
+                    max_accu = accu
    
 logclose()
 
