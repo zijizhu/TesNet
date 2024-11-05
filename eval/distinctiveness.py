@@ -95,6 +95,7 @@ def get_attn_maps(outputs: dict[str, torch.Tensor], labels: torch.Tensor):
 @torch.no_grad()
 def evaluate_distinctiveness(net: nn.Module,
                              save_path: str | Path,
+                             run_name: str,
                              thresholds: list[float] =  [0.4, 0.5, 0.6, 0.7, 0.8],
                              box_sizes: list[int] = [90, 72, 56, 36],
                              topk: int = 5,
@@ -158,12 +159,12 @@ def evaluate_distinctiveness(net: nn.Module,
         logger.info(f"Distinctiveness Score with Box Size {size}: {score:.4f}")
     
     np.savez(
-        Path(save_path) / "binary_threshold_distinctiveness",
+        Path(save_path) / f"binary_threshold_distinctiveness_{run_name}",
         **{f"bianry_thresh_{thresh:.1f}_IoUs": np.array(values) for thresh, values in binary_thresh_to_mean_IoUs.items()},
         **{f"bianry_thresh_{thresh:.1f}_score": np.array(score) for thresh, score in binary_thresh_to_scores.items()}
     )
     np.savez(
-        Path(save_path) / "box_distinctiveness",
+        Path(save_path) / f"box_distinctiveness_{run_name}",
         **{f"box_size_{size:.1f}_IoUs": np.array(values) for size, values in box_size_to_mean_IoUs.items()},
         **{f"box_size_{size:.1f}_score": np.array(score) for size, score in box_size_to_scores.items()}
     )

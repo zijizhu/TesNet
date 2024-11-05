@@ -50,14 +50,14 @@ if __name__ == "__main__":
 
     ppnet = checkpoint
 
-    log_dir = Path(args.resume).parents[1]
+    log_dir = Path(args.resume).parent
 
     logging.basicConfig(
         level=logging.INFO,
         format="[%(asctime)s][%(name)s][%(levelname)s] - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[
-            logging.FileHandler((log_dir / "evaluate_distinctiveness.log").as_posix()),
+            logging.FileHandler((log_dir / f"evaluate_distinctiveness-{Path(args.resume).stem}.log").as_posix()),
             logging.StreamHandler(sys.stdout),
         ],
         force=True,
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     ppnet.eval()
 
 
-    evaluate_distinctiveness(ppnet, save_path=log_dir, device=device)
+    evaluate_distinctiveness(ppnet, save_path=log_dir, run_name=Path(args.resume).stem, device=device)
