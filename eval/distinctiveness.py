@@ -132,7 +132,7 @@ def evaluate_distinctiveness(net: nn.Module,
             gt_batch_activations = torch.gather(all_batch_activations, 1, proto_indices) # (B, proto_per_class, fea_size, fea_size)
 
             max_vals = F.adaptive_max_pool2d(gt_batch_activations, output_size=(1, 1,))
-            topk_batch_activations = torch.gather(gt_batch_activations, 1, max_vals.topk(dim=1, k=topk).indices.repeat(1, 1, H, W))
+            topk_batch_activations = torch.gather(gt_batch_activations, 1, max_vals.topk(dim=1, k=min(topk, K)).indices.repeat(1, 1, H, W))
 
             batch_activations = F.avg_pool2d(topk_batch_activations, kernel_size=(2, 2,), stride=2)
         else:
