@@ -151,7 +151,7 @@ class DINOv2BackboneExpanded(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         feature_dict = self.dino.forward_features(x)  # type: dict[str, torch.Tensor]
-        feature = feature_dict["x_norm_patch_tokens"]
+        feature = feature_dict["x_norm_patchtokens"]
         
         B, n_patches, dim = feature.shape
 
