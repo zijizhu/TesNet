@@ -116,6 +116,7 @@ def evaluate_comprehensiveness(net: nn.Module,
                                save_path: str | Path,
                                thresholds: list[float] =  [0.8, 0.85, 0.9],
                                topk: int = 5,
+                               run_name: str = "",
                                num_classes: int = 200,
                                device: torch.device = torch.device("cpu"),
                                input_size: tuple[int, int] = (224, 224,)):
@@ -166,7 +167,7 @@ def evaluate_comprehensiveness(net: nn.Module,
         logger.info(f"Comprehensiveness Score with Threshold {thresh:.1f}: {score:.4f}")
 
     np.savez(
-        Path(save_path) / "binary_threshold_comprehensiveness",
+        Path(save_path) / f"binary_threshold_comprehensiveness_{run_name}",
         **{f"bianry_thresh_{thresh:.1f}_IoUs": np.array(values) for thresh, values in binary_thresh_to_IoUs.items()},
         **{f"bianry_thresh_{thresh:.1f}_score": np.array(score) for thresh, score in binary_thresh_to_scores.items()}
     )
