@@ -101,7 +101,7 @@ elif dataset_name == "Cars":
 
     prototype_activation_function = settings_cars.prototype_activation_function
     #datasets
-    data_dir = settings_cars.train_dir
+    data_dir = settings_cars.data_path
     train_batch_size = settings_cars.train_batch_size
     test_batch_size = settings_cars.test_batch_size
     train_push_batch_size = settings_cars.train_push_batch_size
@@ -127,7 +127,7 @@ elif dataset_name == "Dogs":
 
     prototype_activation_function = settings_dogs.prototype_activation_function
     #datasets
-    data_dir = settings_dogs.train_dir
+    data_dir = settings_dogs.data_path
     train_batch_size = settings_dogs.train_batch_size
     test_batch_size = settings_dogs.test_batch_size
     train_push_batch_size = settings_dogs.train_push_batch_size
@@ -176,7 +176,7 @@ if args.dataset == "CUB":
         ]))
 elif args.dataset == "Cars":
     train_dataset = datasets.StanfordCars(
-        data_dir, split="train", download=True,
+        data_dir, split="train", download=False,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
@@ -184,7 +184,7 @@ elif args.dataset == "Cars":
         ])
     )
     train_push_dataset = datasets.StanfordCars(
-        data_dir, split="train", download=True,
+        data_dir, split="train", download=False,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
@@ -192,7 +192,7 @@ elif args.dataset == "Cars":
         ])
     )
     test_dataset = datasets.StanfordCars(
-        data_dir, split="test", download=True,
+        data_dir, split="test", download=False,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
