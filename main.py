@@ -16,13 +16,16 @@ from util.log import create_logger
 from util.preprocess import mean, std, preprocess_input_function
 
 import settings_CUB
+import settings_cars
+import settings_dogs
+from util.data import DogsDataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-gpuid',type=str, default='0')
 parser.add_argument('-arch',type=str, default='vgg19')
 parser.add_argument('-num_prototypes', type=int, default=2000)
 
-parser.add_argument('-dataset',type=str,default="CUB")
+parser.add_argument('-dataset',type=str,default="CUB", choices=["CUB", "Cars", "Dogs"])
 parser.add_argument('-times',type=str,default="test",help="experiment_run")
 
 args = parser.parse_args()
@@ -89,7 +92,58 @@ if dataset_name == "CUB":
     num_warm_epochs = settings_CUB.num_warm_epochs
     push_start = settings_CUB.push_start
     push_epochs = settings_CUB.push_epochs
+elif dataset_name == "Cars":
+    num_classes = settings_cars.num_classes
+    img_size = settings_cars.img_size
+    add_on_layers_type = settings_cars.add_on_layers_type
+    prototype_shape = settings_cars.prototype_shape
+    prototype_shape = (args.num_prototypes, prototype_shape[1], prototype_shape[2], prototype_shape[3],)
 
+    prototype_activation_function = settings_cars.prototype_activation_function
+    #datasets
+    data_dir = settings_cars.train_dir
+    train_batch_size = settings_cars.train_batch_size
+    test_batch_size = settings_cars.test_batch_size
+    train_push_batch_size = settings_cars.train_push_batch_size
+    #optimzer
+    joint_optimizer_lrs = settings_cars.joint_optimizer_lrs
+    joint_lr_step_size = settings_cars.joint_lr_step_size
+    warm_optimizer_lrs = settings_cars.warm_optimizer_lrs
+
+    last_layer_optimizer_lr = settings_cars.last_layer_optimizer_lr
+    # weighting of different training losses
+    coefs = settings_cars.coefs
+    # number of training epochs, number of warm epochs, push start epoch, push epochs
+    num_train_epochs = settings_cars.num_train_epochs
+    num_warm_epochs = settings_cars.num_warm_epochs
+    push_start = settings_cars.push_start
+    push_epochs = settings_cars.push_epochs
+elif dataset_name == "Dogs":
+    num_classes = settings_dogs.num_classes
+    img_size = settings_dogs.img_size
+    add_on_layers_type = settings_dogs.add_on_layers_type
+    prototype_shape = settings_dogs.prototype_shape
+    prototype_shape = (args.num_prototypes, prototype_shape[1], prototype_shape[2], prototype_shape[3],)
+
+    prototype_activation_function = settings_dogs.prototype_activation_function
+    #datasets
+    data_dir = settings_dogs.train_dir
+    train_batch_size = settings_dogs.train_batch_size
+    test_batch_size = settings_dogs.test_batch_size
+    train_push_batch_size = settings_dogs.train_push_batch_size
+    #optimzer
+    joint_optimizer_lrs = settings_dogs.joint_optimizer_lrs
+    joint_lr_step_size = settings_dogs.joint_lr_step_size
+    warm_optimizer_lrs = settings_dogs.warm_optimizer_lrs
+
+    last_layer_optimizer_lr = settings_dogs.last_layer_optimizer_lr
+    # weighting of different training losses
+    coefs = settings_dogs.coefs
+    # number of training epochs, number of warm epochs, push start epoch, push epochs
+    num_train_epochs = settings_dogs.num_train_epochs
+    num_warm_epochs = settings_dogs.num_warm_epochs
+    push_start = settings_dogs.push_start
+    push_epochs = settings_dogs.push_epochs
 else:
     raise Exception("there are no settings file of datasets {}".format(dataset_name))
 
@@ -99,37 +153,90 @@ normalize = transforms.Normalize(mean=mean,std=std)
 
 # all datasets
 # train set
-train_dataset = datasets.ImageFolder(
-    train_dir,
-    transforms.Compose([
-        transforms.Resize(size=(img_size, img_size)),
-        transforms.ToTensor(),
-        normalize,
-    ]))
+if args.dataset == "CUB":
+    train_dataset = datasets.ImageFolder(
+        train_dir,
+        transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+    # push set
+    train_push_dataset = datasets.ImageFolder(
+        train_push_dir,
+        transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+        ]))
+    # test set
+    test_dataset = datasets.ImageFolder(
+        test_dir,
+        transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+elif args.dataset == "Cars":
+    train_dataset = datasets.StanfordCars(
+        data_dir, split="train", download=False,
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+    train_push_dataset = datasets.StanfordCars(
+        data_dir, split="train", download=False,
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+    test_dataset = datasets.StanfordCars(
+        args.data_path, split="test", download=False,
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+elif args.dataset == "Dogs":
+    train_dataset = DogsDataset(
+        root="datasets", split="train",
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+    train_push_dataset = DogsDataset(
+        root="datasets", split="train",
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+    test_dataset = DogsDataset(
+        root="datasets", split="test",
+        transform= transforms.Compose([
+            transforms.Resize(size=(img_size, img_size)),
+            transforms.ToTensor(),
+            normalize,
+        ])
+    )
+
 train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=train_batch_size, shuffle=True,
-    num_workers=4, pin_memory=False)
-# push set
-train_push_dataset = datasets.ImageFolder(
-    train_push_dir,
-    transforms.Compose([
-        transforms.Resize(size=(img_size, img_size)),
-        transforms.ToTensor(),
-    ]))
+        train_dataset, batch_size=train_batch_size, shuffle=True,
+        num_workers=4, pin_memory=False)
+
 train_push_loader = torch.utils.data.DataLoader(
-    train_push_dataset, batch_size=train_push_batch_size, shuffle=False,
-    num_workers=4, pin_memory=False)
-# test set
-test_dataset = datasets.ImageFolder(
-    test_dir,
-    transforms.Compose([
-        transforms.Resize(size=(img_size, img_size)),
-        transforms.ToTensor(),
-        normalize,
-    ]))
+        train_push_dataset, batch_size=train_push_batch_size, shuffle=False,
+        num_workers=4, pin_memory=False)
 test_loader = torch.utils.data.DataLoader(
-    test_dataset, batch_size=test_batch_size, shuffle=False,
-    num_workers=4, pin_memory=False)
+        test_dataset, batch_size=test_batch_size, shuffle=False,
+        num_workers=4, pin_memory=False)
 
 # we should look into distributed sampler more carefully at torch.utils.data.distributed.DistributedSampler(train_dataset)
 log('training set size: {0}'.format(len(train_loader.dataset)))
@@ -223,8 +330,9 @@ for epoch in range(num_train_epochs):
         accu,test_results = tnt.test(model=ppnet_multi, dataloader=test_loader,
                         class_specific=class_specific, log=log)
         if accu >= max_accu:
-            save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
-                                        target_accu=0.70, log=log)
+            if args.dataset == "CUB":
+                save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
+                                            target_accu=0.70, log=log)
             max_accu = accu
     #stage3: concept based classification
         if prototype_activation_function != 'linear':
@@ -237,8 +345,9 @@ for epoch in range(num_train_epochs):
                 accu,test_results = tnt.test(model=ppnet_multi, dataloader=test_loader,
                                 class_specific=class_specific, log=log)
                 if accu >= max_accu:
-                    save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
-                                                target_accu=0.70, log=log)
+                    if args.dataset == "CUB":
+                        save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
+                                                    target_accu=0.70, log=log)
                     max_accu = accu
    
 logclose()
