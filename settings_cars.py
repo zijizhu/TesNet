@@ -1,7 +1,7 @@
 
 img_size = 224
 prototype_shape = (2000, 64, 1, 1)
-num_classes = 200
+num_classes = 196
 prototype_activation_function = 'log'
 add_on_layers_type = 'regular'
 
