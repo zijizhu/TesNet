@@ -147,8 +147,6 @@ elif dataset_name == "Dogs":
 else:
     raise Exception("there are no settings file of datasets {}".format(dataset_name))
 
-log(train_dir)
-
 normalize = transforms.Normalize(mean=mean,std=std)
 
 # all datasets
