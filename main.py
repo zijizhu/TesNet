@@ -176,7 +176,7 @@ if args.dataset == "CUB":
         ]))
 elif args.dataset == "Cars":
     train_dataset = datasets.StanfordCars(
-        data_dir, split="train", download=False,
+        data_dir, split="train", download=True,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
@@ -184,7 +184,7 @@ elif args.dataset == "Cars":
         ])
     )
     train_push_dataset = datasets.StanfordCars(
-        data_dir, split="train", download=False,
+        data_dir, split="train", download=True,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
@@ -192,7 +192,7 @@ elif args.dataset == "Cars":
         ])
     )
     test_dataset = datasets.StanfordCars(
-        args.data_path, split="test", download=False,
+        data_dir, split="test", download=True,
         transform= transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
